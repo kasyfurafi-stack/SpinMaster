@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎡 SpinMaster - Roda Putar & Pengacak Nama Elegan</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              400: '#ffe082',
+              500: '#ffd966',
+              600: '#ffb703',
+              700: '#b38f40'
+            },
+            teal: {
+              500: '#4f9da6',
+              600: '#3d868e',
+              700: '#2b6b73'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Custom Elegant Dark Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body class="pb-16 antialiased selection:bg-amber-400 selection:text-slate-900">
+
+  <!-- TOP HEADER / NAV -->
+  <header class="sticky top-0 z-30 bg-slate-950/70 backdrop-blur-md border-b border-white/10 shadow-lg">
+    <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5 cursor-pointer group" onclick="goToHome()">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-400 via-amber-500 to-yellow-200 flex items-center justify-center text-slate-900 shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform">
+          <i class="ph-bold ph-spinner text-xl"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-100">
+            SpinMaster
+          </span>
+          <span class="block text-[10px] text-slate-400 -mt-1 font-medium tracking-wider uppercase">Undian Elegan</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <!-- Sound Toggle Button -->
+        <button id="btn-sound-toggle" onclick="toggleSound()" class="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition" title="Toggle Efek Suara">
+          <i id="icon-sound" class="ph-bold ph-speaker-high text-lg text-amber-400"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER (Mobile Centered & Fully Responsive) -->
+  <main class="max-w-md mx-auto px-4 pt-4">
+
+    <!-- ========================================================
+         VIEW 1: HOME SCREEN / MODE SELECTION
+         ======================================================== -->
+    <section id="view-home" class="space-y-4">
+      <div class="text-center py-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-400/25">
+          <i class="ph-fill ph-sparkle text-amber-400"></i> Roda Putar & Pengacak Acak Nama
+        </span>
+        <h1 class="text-2xl font-black mt-2 tracking-tight text-white">Pilih Mode Pengundian</h1>
+        <p class="text-xs text-slate-300/80 mt-1">Tentukan metode undian yang pas untuk acara, giveaway, atau arisan Anda</p>
+      </div>
+
+      <!-- Quick Input Participants Textarea -->
+      <div class="glass-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <i class="ph-bold ph-users-three text-amber-400"></i> Daftar Peserta
+          </label>
+          <span id="home-count-badge" class="text-xs px-2.5 py-0.5 rounded-full bg-white/10 font-medium text-amber-300 border border-white/10">
+            8 Peserta
+          </span>
+        </div>
+        <textarea id="home-names-input" rows="4"
+          placeholder="Tuliskan nama satu per baris...&#10;Contoh: Andi, Budi, Citra"
+          class="w-full text-sm p-3 glass-input resize-none"></textarea>
+        <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/10 text-xs">
+          <button onclick="loadSampleNames()" class="font-semibold text-amber-300 hover:text-amber-200 hover:underline flex items-center gap-1">
+            <i class="ph-bold ph-arrow-counter-clockwise"></i> Muat Contoh Nama
+          </button>
+          <button onclick="clearNames()" class="font-medium text-rose-400 hover:text-rose-300 hover:underline">
+            Kosongkan
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Cards -->
+      <div class="grid grid-cols-1 gap-3.5 pt-1">
+        <!-- Mode 1: Spin Juara 1, 2, 3 -->
+        <div onclick="selectMode('winners')" class="glass-card glass-card-interactive p-4 border-amber-400/30 hover:border-amber-400/70 group">
+          <div class="flex items-start gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-500/20 shrink-0">
+              <i class="ph-fill ph-trophy"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-white group-hover:text-amber-300 transition">
+                  Mode 1: Spin Juara 1, 2, 3
+                </h3>
+                <i class="ph-bold ph-arrow-right text-amber-400 text-lg group-hover:translate-x-1 transition-transform"></i>
+              </div>
+              <p class="text-xs text-slate-300/80 mt-1 leading-relaxed">
+                Putar roda langkah demi langkah untuk menentukan <strong>Juara 3, Juara 2, & Juara 1</strong> dengan podium & selebrasi meriah.
+              </p>
+              <div class="flex items-center gap-2 mt-3">
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                  Podium Juara
+                </span>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                  Eliminasi Pemenang
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode 2: Bulk Randomizer -->
+        <div onclick="selectMode('bulk')" class="glass-card glass-card-interactive p-4 border-teal-400/30 hover:border-teal-400/70 group">
+          <div class="flex items-start gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-400 via-cyan-500 to-teal-600 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-teal-500/20 shrink-0">
+              <i class="ph-fill ph-shuffle"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-white group-hover:text-teal-300 transition">
+                  Mode 2: Pengacak Langsung Semua
+                </h3>
+                <i class="ph-bold ph-arrow-right text-teal-400 text-lg group-hover:translate-x-1 transition-transform"></i>
+              </div>
+              <p class="text-xs text-slate-300/80 mt-1 leading-relaxed">
+                Acak seluruh urutan nama sekaligus dengan animasi instan (Slot Machine Effect). Langsung hasil urutan #1 sampai akhir!
+              </p>
+              <div class="flex items-center gap-2 mt-3">
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                  Acak Sekaligus
+                </span>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                  Salin & Ekspor
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 2: MODE 1 - SPIN JUARA 1, 2, 3 (TOURNAMENT)
+         ======================================================== -->
+    <section id="view-mode-winners" class="hidden space-y-4">
+      <!-- Mode Header Bar -->
+      <div class="flex items-center justify-between glass-card p-3">
+        <button onclick="goToHome()" class="flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white transition">
+          <i class="ph-bold ph-caret-left text-base"></i> Menu Utama
+        </button>
+        <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center gap-1">
+          <i class="ph-fill ph-trophy"></i> Mode Juara 1-3
+        </span>
+        <button onclick="openEditModal()" class="text-xs font-semibold text-amber-300 hover:text-amber-200 flex items-center gap-1">
+          <i class="ph-bold ph-pencil-simple"></i> Edit (<span class="count-badge">8</span>)
+        </button>
+      </div>
+
+      <!-- Current Target Stage Banner -->
+      <div id="target-stage-banner" class="rounded-2xl p-3.5 text-center text-slate-950 font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 shadow-lg shadow-amber-500/20 border border-amber-200/50">
+        <p class="text-[11px] uppercase font-extrabold tracking-wider text-slate-800/80">Putaran Saat Ini</p>
+        <h2 id="target-stage-text" class="text-lg font-black mt-0.5 flex items-center justify-center gap-2">
+          <i class="ph-fill ph-trophy text-amber-700"></i> Mencari JUARA 3
+        </h2>
+        <p id="target-stage-desc" class="text-xs font-medium text-slate-800/90 mt-0.5">Putar roda untuk menentukan Juara 3 (Perunggu)</p>
+      </div>
+
+      <!-- Interactive Canvas Wheel Area -->
+      <div class="glass-card p-4 flex flex-col items-center relative overflow-hidden">
+        <div class="wheel-wrapper">
+          <!-- Wheel Pointer Indicator (Positioned at 12 o'clock / Top) -->
+          <div class="wheel-pointer"></div>
+
+          <!-- High-Resolution Canvas Wheel (600x600, scaled via CSS to 310px) -->
+          <canvas id="wheel-canvas" width="600" height="600" style="width: 310px; height: 310px;"></canvas>
+
+          <!-- Center Cap Spin Button -->
+          <button id="btn-spin-center" onclick="spinWheel()" class="wheel-center-btn" title="Klik untuk Memutar Roda">
+            <i class="ph-bold ph-play text-slate-900 text-sm mb-0.5"></i>
+            <span>SPIN</span>
+          </button>
+        </div>
+
+        <!-- Spin Action Bar -->
+        <div class="w-full mt-4 flex items-center gap-2.5">
+          <button id="btn-spin-action" onclick="spinWheel()" class="flex-1 py-3.5 btn-gold text-sm tracking-wide flex items-center justify-center gap-2">
+            <i class="ph-bold ph-spinner text-lg"></i>
+            <span id="btn-spin-label">PUTAR RODA SEKARANG</span>
+          </button>
+          <button onclick="resetWinnersTournament()" class="p-3.5 rounded-full btn-glass text-slate-300 hover:text-white" title="Reset Podium & Ulangi">
+            <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PODIUM JUARA 1, 2, 3 VISUAL -->
+      <div class="glass-card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <i class="ph-fill ph-trophy text-amber-400"></i> Papan Juara Pemenang
+          </h3>
+          <span id="podium-status-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/10 text-amber-300">0/3 Terpilih</span>
+        </div>
+
+        <!-- Podium Graphic -->
+        <div class="grid grid-cols-3 gap-2.5 items-end pt-2 pb-1">
+          <!-- Juara 2 (Silver) -->
+          <div class="flex flex-col items-center">
+            <div id="badge-p2" class="w-8 h-8 rounded-full bg-slate-300 text-slate-900 flex items-center justify-center font-bold text-xs mb-1.5 border-2 border-slate-100 shadow-md">
+              2
+            </div>
+            <div class="w-full podium-box podium-2 min-h-[95px]">
+              <span class="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider">Juara 2</span>
+              <p id="winner-name-2" class="font-bold text-xs text-white truncate px-1 my-1">
+                (Belum Ada)
+              </p>
+              <span class="text-[10px] text-slate-300">🥈 Perak</span>
+            </div>
+          </div>
+
+          <!-- Juara 1 (Gold - Highest) -->
+          <div class="flex flex-col items-center">
+            <div id="badge-p1" class="w-10 h-10 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm mb-1.5 border-2 border-yellow-200 shadow-lg shadow-amber-400/40">
+              👑 1
+            </div>
+            <div class="w-full podium-box podium-1 min-h-[120px]">
+              <span class="text-[10px] font-black text-amber-300 uppercase tracking-wider">JUARA 1</span>
+              <p id="winner-name-1" class="font-black text-sm text-amber-200 truncate px-1 my-1">
+                (Belum Ada)
+              </p>
+              <span class="text-[11px] text-amber-300 font-bold">🥇 Emas</span>
+            </div>
+          </div>
+
+          <!-- Juara 3 (Bronze) -->
+          <div class="flex flex-col items-center">
+            <div id="badge-p3" class="w-8 h-8 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center font-bold text-xs mb-1.5 border-2 border-amber-600 shadow-md">
+              3
+            </div>
+            <div class="w-full podium-box podium-3 min-h-[80px]">
+              <span class="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider">Juara 3</span>
+              <p id="winner-name-3" class="font-bold text-xs text-white truncate px-1 my-1">
+                (Belum Ada)
+              </p>
+              <span class="text-[10px] text-amber-300">🥉 Perunggu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 3: MODE 2 - BULK RANDOMIZER (PENGACAK SEMUA)
+         ======================================================== -->
+    <section id="view-mode-bulk" class="hidden space-y-4">
+      <!-- Mode Header Bar -->
+      <div class="flex items-center justify-between glass-card p-3">
+        <button onclick="goToHome()" class="flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white transition">
+          <i class="ph-bold ph-caret-left text-base"></i> Menu Utama
+        </button>
+        <span class="text-xs font-bold px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 border border-teal-400/30 flex items-center gap-1">
+          <i class="ph-fill ph-shuffle"></i> Pengacak Langsung Semua
+        </span>
+        <button onclick="openEditModal()" class="text-xs font-semibold text-teal-300 hover:text-teal-200 flex items-center gap-1">
+          <i class="ph-bold ph-pencil-simple"></i> Edit (<span class="count-badge">8</span>)
+        </button>
+      </div>
+
+      <!-- Bulk Action Box -->
+      <div class="glass-card p-5 text-center">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-teal-400 via-cyan-500 to-teal-600 flex items-center justify-center text-slate-950 text-3xl shadow-lg shadow-teal-500/20 mb-3">
+          <i class="ph-bold ph-dice-three"></i>
+        </div>
+        <h2 class="text-xl font-black text-white">Acak Semua Peserta Sekaligus</h2>
+        <p class="text-xs text-slate-300/80 mt-1 max-w-xs mx-auto leading-relaxed">
+          Sistem akan mengocok seluruh nama dan langsung menampilkan urutan nomor 1 sampai selesai secara adil & acak!
+        </p>
+
+        <!-- Slot Machine Ticker simulation during spin -->
+        <div id="slot-ticker-container" class="my-4 py-3 px-4 rounded-xl bg-black/40 border border-white/15 hidden">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Sedang Mengocok Nama...</span>
+          <div id="slot-ticker-name" class="text-lg font-black text-amber-300 font-mono tracking-wider slot-anim">
+            MEMPROSES...
+          </div>
+        </div>
+
+        <button id="btn-spin-bulk" onclick="spinBulkAll()" class="w-full mt-4 py-3.5 btn-teal text-sm tracking-wide flex items-center justify-center gap-2">
+          <i class="ph-bold ph-shuffle text-xl"></i>
+          <span>SPIN SEMUA SEKARANG</span>
+        </button>
+      </div>
+
+      <!-- Bulk Results Card -->
+      <div id="bulk-results-card" class="glass-card p-4 hidden">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div>
+            <h3 class="font-bold text-sm text-white flex items-center gap-1.5">
+              <i class="ph-bold ph-list-numbers text-amber-400"></i> Hasil Urutan Acak Lengkap
+            </h3>
+            <p class="text-[11px] text-slate-400" id="bulk-timestamp">-</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="copyBulkResults()" class="px-2.5 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 font-semibold text-xs flex items-center gap-1 border border-amber-400/30 transition" title="Salin ke Clipboard">
+              <i class="ph-bold ph-copy"></i> Salin
+            </button>
+            <button onclick="downloadBulkResults()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-slate-200 font-semibold text-xs flex items-center gap-1 border border-white/10 transition" title="Download Text">
+              <i class="ph-bold ph-download-simple"></i> Unduh
+            </button>
+          </div>
+        </div>
+
+        <!-- Result List Table -->
+        <div id="bulk-result-list" class="max-h-72 overflow-y-auto mt-2 pr-1 space-y-1">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================
+       MODAL: WINNER CELEBRATION (JUARA 1, 2, 3)
+       ======================================================== -->
+  <div id="modal-winner" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card max-w-xs w-full p-6 text-center border-amber-400/40 shadow-2xl relative winner-pop">
+      <!-- Trophy Icon Header -->
+      <div id="modal-winner-icon-wrap" class="w-16 h-16 mx-auto rounded-2xl bg-amber-400/20 text-amber-300 flex items-center justify-center text-3xl mb-3 border border-amber-400/30 shadow-inner">
+        <i class="ph-fill ph-trophy"></i>
+      </div>
+
+      <span id="modal-winner-stage-badge" class="px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase bg-amber-400 text-slate-950">
+        JUARA 3
+      </span>
+
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold mt-3.5">Selamat Kepada:</h3>
+      <h2 id="modal-winner-name" class="text-2xl font-black text-amber-300 mt-1 break-words">
+        Budi Santoso
+      </h2>
+
+      <p class="text-xs text-slate-300/80 mt-2 px-1 leading-relaxed">
+        Hapus nama pemenang dari roda agar tidak terpilih lagi di putaran berikutnya?
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2 mt-5">
+        <button onclick="confirmWinner(true)" class="w-full py-2.5 btn-gold text-xs flex items-center justify-center gap-1.5">
+          <i class="ph-bold ph-trash"></i> Simpan & Hapus Dari Roda (Rekomendasi)
+        </button>
+        <button onclick="confirmWinner(false)" class="w-full py-2 rounded-full btn-glass text-xs font-semibold text-slate-300 hover:text-white">
+          Biarkan Nama Tetap di Roda
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: EDIT DAFTAR NAMA PESERTA
+       ======================================================== -->
+  <div id="modal-edit-names" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card max-w-sm w-full p-5 border-white/20 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i class="ph-bold ph-users-three text-amber-400"></i> Kelola Daftar Peserta
+        </h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white transition">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div class="mt-3">
+        <p class="text-xs text-slate-300/80 mb-2">
+          Ketikkan nama peserta (satu nama per baris). Minimal 2 peserta.
+        </p>
+        <textarea id="modal-names-input" rows="7" class="w-full text-sm p-3 glass-input resize-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between mt-3.5 pt-2 border-t border-white/10">
+        <button onclick="loadSampleEditModal()" class="text-xs font-semibold text-amber-300 hover:text-amber-200 hover:underline">
+          Contoh Nama
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeEditModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+            Batal
+          </button>
+          <button onclick="saveEditModal()" class="px-4 py-1.5 rounded-full btn-gold text-xs">
+            Simpan Perubahan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       TOAST NOTIFICATION
+       ======================================================== -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white border border-amber-400/40 px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-2 backdrop-blur-md">
+    <i class="ph-fill ph-check-circle text-amber-400 text-base"></i>
+    <span id="toast-text">Teks tersalin!</span>
+  </div>
+
+  <!-- ========================================================
+       SCRIPTS (MODULAR ARCHITECTURE)
+       ======================================================== -->
+  <script src="js/audio.js"></script>
+  <script src="js/wheel.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
+
